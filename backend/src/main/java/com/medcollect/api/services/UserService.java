@@ -12,6 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -55,11 +56,8 @@ public class UserService {
         return userRepository.save(baseUser.roles(Set.of(Role.PATIENT)).build());
     }
 
-    public List<User> getUserByFirebaseUid(String firebaseUid) {
-        final var user  = userRepository.findAll();
+    public Optional<User> getUserByFirebaseUid(String firebaseUid) {
 
-        log.info("User found: {}", user);
-
-        return user;
+        return userRepository.findByFirebaseUid(firebaseUid);
     }
 }

@@ -1,12 +1,11 @@
 package com.medcollect.api.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Set;
 
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -35,6 +34,9 @@ public class User {
 
     @Column(nullable = false)
     private String firebaseUid;
+
+    @Column(nullable = false)
+    private String createdAt;
 
     public boolean hasRole(String role) {
         return roles.contains(Role.valueOf(role));
