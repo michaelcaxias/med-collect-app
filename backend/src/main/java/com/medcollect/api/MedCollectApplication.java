@@ -11,12 +11,15 @@ import java.io.IOException;
 @SpringBootApplication
 public class MedCollectApplication {
     public static void main(String[] args) throws IOException {
-        FirebaseOptions options = FirebaseOptions.builder()
-                .setCredentials(GoogleCredentials.getApplicationDefault())
-                .setProjectId(System.getenv("FIREBASE_PROJECT_ID"))
-                .build();
 
-        FirebaseApp.initializeApp(options);
+        if (FirebaseApp.getApps().isEmpty()) {
+            FirebaseOptions options = FirebaseOptions.builder()
+                    .setCredentials(GoogleCredentials.getApplicationDefault())
+                    .setProjectId(System.getenv("FIREBASE_PROJECT_ID"))
+                    .build();
+
+            FirebaseApp.initializeApp(options);
+        }
 
         SpringApplication.run(MedCollectApplication.class, args);
     }
