@@ -5,6 +5,7 @@ import com.medcollect.api.models.Role;
 import com.medcollect.api.models.User;
 import com.medcollect.api.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -16,9 +17,12 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
     private final UserRepository userRepository;
     private final FirebaseAuthService firebaseAuthService;
+
+    private static final String ROLE_CLAIM = "roles";
 
     public User createUser(CreateUserRequest request) {
         if (userRepository.findByFirebaseUid(request.firebaseUid()).isPresent()) {
@@ -35,8 +39,8 @@ public class UserService {
 
         final var claims = firebaseUser.getCustomClaims();
 
-        if (Objects.nonNull(claims) && claims.containsKey("roles")) {
-            final var roles = claims.get("roles");
+        if (Objects.nonNull(claims) && claims.containsKey(ROLE_CLAIM)) {
+            final var roles = claims.get(ROLE_CLAIM);
 
             if (roles instanceof String role) {
                 final List<String> splitRoles = List.of(role.split(","));
@@ -49,5 +53,13 @@ public class UserService {
         }
 
         return userRepository.save(baseUser.roles(Set.of(Role.PATIENT)).build());
+    }
+
+    public List<User> getUserByFirebaseUid(String firebaseUid) {
+        final var user  = userRepository.findAll();
+
+        log.info("User found: {}", user);
+
+        return user;
     }
 }

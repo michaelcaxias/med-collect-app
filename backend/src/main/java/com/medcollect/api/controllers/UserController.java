@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
@@ -18,5 +20,10 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     public User createUser(@RequestBody @Valid CreateUserRequest request) {
         return userService.createUser(request);
+    }
+
+    @GetMapping("/firebase/{firebaseUid}")
+    public List<User> getUserByFirebaseUid(@PathVariable String firebaseUid) {
+        return userService.getUserByFirebaseUid(firebaseUid);
     }
 }

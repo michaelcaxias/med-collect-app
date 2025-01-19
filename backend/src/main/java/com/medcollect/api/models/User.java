@@ -1,28 +1,29 @@
 package com.medcollect.api.models;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "users", indexes = {
     @Index(name = "idx_firebase_uid", columnList = "firebaseUid", unique = true)
 })
-public record User(
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    String id,
+    private String id;
 
     @Column(nullable = false)
-    String name,
+    private String name;
 
     @Column(nullable = false, unique = true)
-    String email,
+    private String email;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
@@ -30,12 +31,12 @@ public record User(
         joinColumns = @JoinColumn(name = "user_id")
     )
     @Column(name = "role")
-    Set<Role> roles,
+    private Set<Role> roles;
 
     @Column(nullable = false)
-    String firebaseUid
-) {
+    private String firebaseUid;
+
     public boolean hasRole(String role) {
-        return roles.contains(role);
+        return roles.contains(Role.valueOf(role));
     }
 }
