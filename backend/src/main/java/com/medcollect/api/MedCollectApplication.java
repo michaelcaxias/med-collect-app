@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.medcollect.api;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.io.IOException;
 
 @SpringBootApplication
-public class DemoApplication {
+public class MedCollectApplication {
     public static void main(String[] args) throws IOException {
         FirebaseOptions options = FirebaseOptions.builder()
                 .setCredentials(GoogleCredentials.getApplicationDefault())
@@ -18,6 +18,6 @@ public class DemoApplication {
 
         FirebaseApp.initializeApp(options);
 
-        SpringApplication.run(DemoApplication.class, args);
+        SpringApplication.run(MedCollectApplication.class, args);
     }
 }
