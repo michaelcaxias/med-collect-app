@@ -1,18 +1,15 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { Login } from './pages/Login';
+import { Register } from './pages/Register';
 
 interface PrivateRouteProps {
   children: React.ReactNode;
 }
 
 const PrivateRoute = ({ children }: PrivateRouteProps) => {
-  const { currentUser, loading } = useAuth();
-
-  if (loading) {
-    return <div>Carregando...</div>;
-  }
-
+  const { currentUser } = useAuth();
+  
   if (!currentUser) {
     return <Navigate to="/login" />;
   }
@@ -22,22 +19,20 @@ const PrivateRoute = ({ children }: PrivateRouteProps) => {
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
+    <Router>
+      <AuthProvider>
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route
-            path="/dashboard"
-            element={
-              <PrivateRoute>
-                <div>Dashboard (Em construção)</div>
-              </PrivateRoute>
-            }
-          />
+          <Route path="/register" element={<Register />} />
+          <Route path="/dashboard" element={
+            <PrivateRoute>
+              <div>Dashboard (Em construção)</div>
+            </PrivateRoute>
+          } />
           <Route path="/" element={<Navigate to="/login" />} />
         </Routes>
-      </Router>
-    </AuthProvider>
+      </AuthProvider>
+    </Router>
   );
 }
 

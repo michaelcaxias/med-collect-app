@@ -1,22 +1,21 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { 
-  Auth,
-  User,
-  UserCredential,
   signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   signOut as firebaseSignOut,
-  onAuthStateChanged
+  onAuthStateChanged,
+  User
 } from 'firebase/auth';
 import { auth } from '../config/firebase';
 
 interface AuthContextType {
   currentUser: User | null;
-  signIn: (email: string, password: string) => Promise<UserCredential>;
+  signIn: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
-  loading: boolean;
 }
 
-const AuthContext = createContext<AuthContextType | null>(null);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -43,19 +42,23 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return unsubscribe;
   }, []);
 
-  const signIn = (email: string, password: string) => {
-    return signInWithEmailAndPassword(auth, email, password);
+  const signIn = async (email: string, password: string) => {
+    await signInWithEmailAndPassword(auth, email, password);
   };
 
-  const signOut = () => {
-    return firebaseSignOut(auth);
+  const signUp = async (email: string, password: string) => {
+    await createUserWithEmailAndPassword(auth, email, password);
+  };
+
+  const signOut = async () => {
+    await firebaseSignOut(auth);
   };
 
   const value = {
     currentUser,
     signIn,
-    signOut,
-    loading
+    signUp,
+    signOut
   };
 
   return (
