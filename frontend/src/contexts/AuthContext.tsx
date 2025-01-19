@@ -8,11 +8,12 @@ import {
   User
 } from 'firebase/auth';
 import { auth } from '../config/firebase';
+import { createUser } from '../services/api';
 
 interface AuthContextType {
   currentUser: User | null;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string, name: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -47,9 +48,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     await signInWithEmailAndPassword(auth, email, password);
   };
 
-  const signUp = async (email: string, password: string) => {
-    await createUserWithEmailAndPassword(auth, email, password);
-    await sendEmailVerification(auth.currentUser!);
+  const signUp = async (email: string, password: string, name: string) => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await sendEmailVerification(userCredential.user);
+      await createUser({
+        firebaseUid: userCredential.user.uid,
+        name
+      });
+    } catch (error) {
+      throw error;
+    }
   };
 
   const signOut = async () => {

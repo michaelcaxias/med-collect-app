@@ -20,6 +20,11 @@ export const Register = () => {
     e.preventDefault();
     setError('');
 
+    if (!name.trim()) {
+      setError('O nome é obrigatório');
+      return;
+    }
+
     if (password !== confirmPassword) {
       setError('As senhas não coincidem');
       return;
@@ -32,9 +37,15 @@ export const Register = () => {
     
     try {
       setLoading(true);
-      await signUp(email, password);
+      console.log('Iniciando registro com:', { email, name });
+      await signUp(email, password, name);
+      console.log('Registro concluído com sucesso');
       navigate('/dashboard');
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Erro detalhado:', error);
+      if (error.response) {
+        console.error('Resposta da API:', error.response.data);
+      }
       setError('Erro ao criar conta. Verifique suas informações e tente novamente.');
     } finally {
       setLoading(false);
@@ -99,12 +110,12 @@ export const Register = () => {
         />
 
         <div className="text-center">
-          <p className="text-sm text-gray-600">
+          <span className="text-sm text-gray-600">
             Já tem uma conta?{' '}
-            <Link to="/login" className="text-indigo-600 hover:text-indigo-700 font-medium">
+            <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
               Faça login
             </Link>
-          </p>
+          </span>
         </div>
       </form>
     </AuthLayout>
