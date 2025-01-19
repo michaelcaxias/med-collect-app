@@ -3,6 +3,7 @@ package com.medcollect.api.services;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
+import com.google.firebase.auth.UserRecord;
 import com.medcollect.api.models.User;
 import com.medcollect.api.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,36 +16,12 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class FirebaseAuthService {
     private final FirebaseAuth firebaseAuth;
-    private final UserRepository userRepository;
 
-    public Optional<User> verifyAndGetUser(String idToken) {
+    public Optional<UserRecord> getUser(String firebaseUid) {
         try {
-            FirebaseToken decodedToken = firebaseAuth.verifyIdToken(idToken);
-            return userRepository.findByFirebaseUid(decodedToken.getUid());
+            return Optional.of(firebaseAuth.getUser(firebaseUid));
         } catch (FirebaseAuthException e) {
             return Optional.empty();
         }
-    }
-
-    public User createUser(String idToken) throws FirebaseAuthException {
-        FirebaseToken decodedToken = firebaseAuth.verifyIdToken(idToken);
-        
-        return userRepository.save(User.builder()
-                .name(decodedToken.getName())
-                .email(decodedToken.getEmail())
-                .firebaseUid(decodedToken.getUid())
-                .roles(Set.of("USER"))
-                .build());
-    }
-
-    public void deleteUser(String firebaseUid) throws FirebaseAuthException {
-        firebaseAuth.deleteUser(firebaseUid);
-        userRepository.findByFirebaseUid(firebaseUid)
-                .ifPresent(userRepository::delete);
-    }
-
-    public boolean isEmailVerified(String idToken) throws FirebaseAuthException {
-        FirebaseToken decodedToken = firebaseAuth.verifyIdToken(idToken);
-        return Boolean.TRUE.equals(decodedToken.getClaims().get("email_verified"));
     }
 }

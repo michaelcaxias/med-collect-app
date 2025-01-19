@@ -3,7 +3,10 @@ package com.medcollect.api.models;
 import jakarta.persistence.*;
 import lombok.Builder;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Builder
 @Entity
@@ -27,7 +30,7 @@ public record User(
         joinColumns = @JoinColumn(name = "user_id")
     )
     @Column(name = "role")
-    Set<String> roles,
+    Set<Role> roles,
 
     @Column(nullable = false)
     String firebaseUid
