@@ -8,6 +8,10 @@ interface PrivateRouteProps {
   children: React.ReactNode;
 }
 
+interface PublicRouteProps {
+  children: React.ReactNode;
+}
+
 const PrivateRoute = ({ children }: PrivateRouteProps) => {
   const { currentUser } = useAuth();
   
@@ -18,19 +22,42 @@ const PrivateRoute = ({ children }: PrivateRouteProps) => {
   return <>{children}</>;
 };
 
+const PublicRoute = ({ children }: PublicRouteProps) => {
+  const { currentUser } = useAuth();
+
+  if (currentUser) {
+    return <Navigate to="/dashboard" />;
+  }
+
+  return <>{children}</>;
+};
+
+const RootRedirect = () => {
+  const { currentUser } = useAuth();
+  return currentUser ? <Navigate to="/dashboard" /> : <Navigate to="/login" />;
+};
+
 function App() {
   return (
     <Router>
       <AuthProvider>
         <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          } />
+          <Route path="/register" element={
+            <PublicRoute>
+              <Register />
+            </PublicRoute>
+          } />
           <Route path="/dashboard" element={
             <PrivateRoute>
               <Dashboard />
             </PrivateRoute>
           } />
-          <Route path="/" element={<Navigate to="/login" />} />
+          <Route path="/" element={<RootRedirect />} />
         </Routes>
       </AuthProvider>
     </Router>
