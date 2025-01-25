@@ -4,6 +4,7 @@ import com.medcollect.api.dtos.CreateUserRequest
 import com.medcollect.api.models.Role
 import com.medcollect.api.models.User
 import com.medcollect.api.repositories.UserRepository
+import com.google.firebase.auth.UserRecord
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
@@ -27,14 +28,7 @@ class UserService(
         val firebaseUser = firebaseAuthService.getUser(request.firebaseUid)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
 
-        val roles = firebaseUser.customClaims?.get(ROLE_CLAIM)?.let { roles ->
-            when (roles) {
-                is String -> roles.split(",")
-                    .map { Role.valueOf(it) }
-                    .toSet()
-                else -> setOf(Role.PATIENT)
-            }
-        } ?: setOf(Role.PATIENT)
+        val roles = getFirebaseUserRoles(firebaseUser)
 
         return userRepository.save(
             User(
@@ -45,6 +39,19 @@ class UserService(
                 createdAt = LocalDateTime.now()
             )
         )
+    } 
+
+    fun getFirebaseUserRoles(firebaseUser: UserRecord): Set<Role> {
+        val patientSet = setOf(Role.PATIENT)
+
+        return firebaseUser.customClaims?.get(ROLE_CLAIM)?.let { roles ->
+            when (roles) {
+                is String -> roles.split(",")
+                    .map { Role.valueOf(it) }
+                    .toSet()
+                else -> patientSet
+            }
+        } ?: patientSet
     }
 
     fun getUserByFirebaseUid(firebaseUid: String): User? =
