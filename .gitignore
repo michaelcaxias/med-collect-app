@@ -51,7 +51,6 @@ build/
 *.iws
 *.iml
 *.ipr
-out/
 
 ## VS Code
 .vscode/

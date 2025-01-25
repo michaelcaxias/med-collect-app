@@ -1,7 +1,7 @@
 package com.medcollect.api.infrastructure.adapters
 
 import com.medcollect.api.domain.models.User
-import com.medcollect.api.domain.ports.UserPort
+import com.medcollect.api.domain.ports.out.UserPort
 import com.medcollect.api.infrastructure.persistence.UserRepository
 import com.medcollect.api.infrastructure.persistence.entities.UserEntity
 import org.springframework.stereotype.Component

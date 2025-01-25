@@ -2,10 +2,10 @@ package com.medcollect.api.application.usecases
 
 import com.medcollect.api.domain.models.Role
 import com.medcollect.api.domain.models.User
-import com.medcollect.api.domain.ports.FirebaseAuthPort
-import com.medcollect.api.domain.ports.UserPort
 import com.medcollect.api.domain.ports.`in`.CreateUserInputPort
 import com.medcollect.api.domain.ports.`in`.CreateUserCommand
+import com.medcollect.api.domain.ports.out.FirebaseAuthPort
+import com.medcollect.api.domain.ports.out.UserPort
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException

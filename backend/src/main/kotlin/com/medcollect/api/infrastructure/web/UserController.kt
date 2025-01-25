@@ -5,7 +5,6 @@ import com.medcollect.api.domain.ports.`in`.CreateUserCommand
 import com.medcollect.api.domain.ports.`in`.CreateUserInputPort
 import com.medcollect.api.domain.ports.`in`.GetUserInputPort
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController

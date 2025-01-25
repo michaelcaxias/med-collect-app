@@ -1,8 +1,8 @@
 package com.medcollect.api.application.usecases
 
 import com.medcollect.api.domain.models.User
-import com.medcollect.api.domain.ports.UserPort
 import com.medcollect.api.domain.ports.`in`.GetUserInputPort
+import com.medcollect.api.domain.ports.out.UserPort
 import org.springframework.stereotype.Service
 
 @Service

@@ -1,7 +1,6 @@
-package com.medcollect.api.domain.ports
+package com.medcollect.api.domain.ports.out
 
 import com.medcollect.api.domain.models.User
-import java.util.*
 
 interface UserPort {
     fun save(user: User): User
