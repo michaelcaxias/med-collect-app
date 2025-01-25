@@ -1,36 +1,36 @@
-package com.medcollect.api.services
+package com.medcollect.api.application.usecases
 
-import com.medcollect.api.dtos.CreateUserRequest
-import com.medcollect.api.models.Role
-import com.medcollect.api.models.User
-import com.medcollect.api.repositories.UserRepository
-import com.google.firebase.auth.UserRecord
+import com.medcollect.api.domain.models.Role
+import com.medcollect.api.domain.models.User
+import com.medcollect.api.domain.ports.FirebaseAuthPort
+import com.medcollect.api.domain.ports.UserPort
+import com.medcollect.api.domain.ports.`in`.CreateUserInputPort
+import com.medcollect.api.domain.ports.`in`.CreateUserCommand
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
 import java.time.LocalDateTime
 
 @Service
-class UserService(
-
-    private val userRepository: UserRepository,
-    private val firebaseAuthService: FirebaseAuthService
-) {
+class CreateUserUseCase(
+    private val userPort: UserPort,
+    private val firebaseAuthPort: FirebaseAuthPort
+) : CreateUserInputPort {
     companion object {
         private const val ROLE_CLAIM = "roles"
     }
 
-    fun createUser(request: CreateUserRequest): User {
-        if (userRepository.findByFirebaseUid(request.firebaseUid) != null) {
+    override fun execute(request: CreateUserCommand): User {
+        if (userPort.findByFirebaseUid(request.firebaseUid) != null) {
             throw ResponseStatusException(HttpStatus.CONFLICT, "User already exists")
         }
 
-        val firebaseUser = firebaseAuthService.getUser(request.firebaseUid)
+        val firebaseUser = firebaseAuthPort.getUser(request.firebaseUid)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
 
-        val roles = getFirebaseUserRoles(firebaseUser)
+        val roles = getFirebaseUserRoles(firebaseUser.customClaims)
 
-        return userRepository.save(
+        return userPort.save(
             User(
                 name = request.name,
                 email = firebaseUser.email,
@@ -39,12 +39,12 @@ class UserService(
                 createdAt = LocalDateTime.now()
             )
         )
-    } 
+    }
 
-    fun getFirebaseUserRoles(firebaseUser: UserRecord): Set<Role> {
+    private fun getFirebaseUserRoles(customClaims: Map<String, Any>?): Set<Role> {
         val patientSet = setOf(Role.PATIENT)
 
-        return firebaseUser.customClaims?.get(ROLE_CLAIM)?.let { roles ->
+        return customClaims?.get(ROLE_CLAIM)?.let { roles ->
             when (roles) {
                 is String -> roles.split(",")
                     .map { Role.valueOf(it) }
@@ -53,7 +53,4 @@ class UserService(
             }
         } ?: patientSet
     }
-
-    fun getUserByFirebaseUid(firebaseUid: String): User? =
-        userRepository.findByFirebaseUid(firebaseUid)
 }
